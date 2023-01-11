@@ -2,6 +2,7 @@ import copy
 import time
 import math
 from enum import Enum
+import os
  
 class StormMovement(Enum):
     UP = 1
@@ -375,6 +376,8 @@ class storm_map:
         return str_map
 
 
+cur_path = os.getcwd()
+cur_dir = os.path.dirname(__file__)
 
 time_per_goal = []
 tic = time.time_ns()
@@ -382,12 +385,14 @@ if False:
     Debug = 2
     M = storm_map(8,6)
     goals = [[6,5],[1,0],[6,5]]
-    M.load_map_and_stroms()
+    filename = "TestMap.dat"
 else:
     Debug = 0
     M = storm_map(102,37,False)
     goals = [[100,36],[1,0],[100,36]]
-    M.load_map_and_stroms("AdventOfCodeDat.dat")
+    filename = "AdventOfCodeDat.dat"
+file_path = os.path.join(cur_dir,filename)
+M.load_map_and_stroms(file_path)
 
 goals_reached = 0
 goal_steps = []
