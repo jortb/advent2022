@@ -1,6 +1,4 @@
 import copy
-import time
-import math
 from enum import Enum
 import os
 import copy
@@ -19,7 +17,6 @@ class elf:
     def __init__(self,list_of_calories):
         self.list_of_calories = list_of_calories
         self.sum = sum(self.list_of_calories)
-
 
 if __name__ == "__main__":
     filename = "Input.txt"
