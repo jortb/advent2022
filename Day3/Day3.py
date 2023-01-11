@@ -23,17 +23,18 @@ class Rucksack:
 
         self.shared_values = dict()
         self.unique_values = dict()
-        self.my_dict_list = [dict()]*nr_compartments
+
+        self.histogram_per_compartment = [dict()]*nr_compartments
         len_compartment = math.floor(self.len_contents / nr_compartments)
         self.compartment = [[0]]*nr_compartments
         self.compartment_string = [[""]]*nr_compartments
         for i in range(nr_compartments):
             self.compartment[i]         = self.contents[i*len_compartment:(i+1)*len_compartment]
             self.compartment_string[i]  = self.contents_string[i*len_compartment:(i+1)*len_compartment]
-            self.my_dict_list[i] = self.__count_contents__(self.compartment[i])
-        self.my_dict = self.__count_contents__(self.contents)
-        for val in self.my_dict_list[0]:
-            if val in self.my_dict_list[1]:
+            self.histogram_per_compartment[i] = self.__count_contents__(self.compartment[i])
+        self.histogram_contents = self.__count_contents__(self.contents)
+        for val in self.histogram_per_compartment[0]:
+            if val in self.histogram_per_compartment[1]:
                 self.shared_values[val] = 1
             else:
                 self.unique_values[val] = 1
@@ -83,7 +84,6 @@ if __name__ == "__main__":
         rucksack = Rucksack(rucksack_string)
         for value in rucksack.shared_values.keys():
             points.append(int(value))
-        print("B")
         rucksacks.append(rucksack)
         
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         shared_items = dict()
         group_rucksacks = rucksacks[i*3:(i+1)*3]
         for rs in group_rucksacks:
-            for item in rs.my_dict.keys():
+            for item in rs.histogram_contents.keys():
                 if item in shared_items:
                     shared_items[item]+= 1
                 else:
