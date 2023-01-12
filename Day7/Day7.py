@@ -42,7 +42,7 @@ $ ls
 5626152 d.ext
 7214296 k"""
 
-test_data = True
+test_data = False
 second_strategy = True
 
 class Folder:
@@ -59,21 +59,50 @@ class File:
         self.name = name
 
 
-def recursive_search(folder,indent=0):
-    tab= "  "
+def recursive_search_max_size(folder,selected_dirs,select_size = 100000):
+    for child_key in folder.children:
+        child =folder.children[child_key]
+        if isinstance(child,Folder):
+            recursive_search_max_size(child,selected_dirs,select_size)
+            if child.size<select_size:
+                selected_dirs.append(child)
+
+def recursive_search_min_size(folder,selected_dirs,select_size = 100000):
+    for child_key in folder.children:
+        child =folder.children[child_key]
+        if isinstance(child,Folder):
+            recursive_search_min_size(child,selected_dirs,select_size)
+            if child.size>select_size:
+                selected_dirs.append(child)
+
+def recursive_parse_size(folder,indent=0):
     total_file_size = 0
     for child_key in folder.children:
         child =folder.children[child_key]
         if isinstance(child,Folder):
-            print(tab*indent + "-" + child.name + " - " + str(child.size))
-            dir_size = recursive_search(child,indent + 1)
+            dir_size = recursive_parse_size(child,indent + 1)
             total_file_size +=dir_size
         else:
-            print(tab*indent + "-" + child.name + " - " + str(child.size))
             total_file_size += child.size
     
     folder.size = total_file_size
     return total_file_size
+
+a =    94853
+b = 14848514
+c =  8504156
+d = 19307490
+test = a + b + c + d
+
+def recursive_print(folder,indent):
+    tab= "  "
+    for child_key in folder.children:
+        child =folder.children[child_key]
+        if isinstance(child,Folder):
+            print(tab*indent + "-" + child.name + " - " + str(child.size) + " (directory)")
+            dir_size = recursive_print(child,indent+1)
+        else:
+            print(tab*indent + "-" + child.name + " - " + str(child.size))
 
 Root = Folder()
 if __name__ == "__main__":
@@ -108,7 +137,7 @@ if __name__ == "__main__":
                 else:
                     pass
         else:
-            reg_file = re.compile(r"(\d+) (\w+)")
+            reg_file = re.compile(r"(\d+) ([\w.]+)")
             
             result = re.match(reg_file,line)
             if result is not None:
@@ -126,12 +155,36 @@ if __name__ == "__main__":
                     cur_path.children[g1] = Folder(cur_path,g1)
                 continue
 
-    recursive_search(Root)
+    recursive_parse_size(Root,0)
     print("###############")
-    recursive_search(Root)   
-    answer_task1 = ""
+    recursive_print(Root,0)   
 
-    answer_task2 = "marker_found_task2"
+    selected_dirs_task1 = []
+    recursive_search_max_size(Root,selected_dirs_task1)
+    total_size_task1 = 0
+
+    
+    for cur_dir in selected_dirs_task1:
+        total_size_task1 +=cur_dir.size
+
+    required_total = 70000000
+    required_space = 30000000
+    required_cleanup = required_space -  (required_total -Root.size)
+    selected_dirs_task2 = []
+    recursive_search_min_size(Root,selected_dirs_task2,required_cleanup)
+    answer_task1 = total_size_task1
+
+    costs = []
+    possible_remove_sizes = []
+    for cur_dir in selected_dirs_task2:
+        cost=cur_dir.size-required_cleanup
+        costs.append(dict(name=cur_dir.name,cost=cost,size=cur_dir.size))
+        possible_remove_sizes.append(cur_dir.size)
+
+    possible_remove_sizes.sort()
+
+
+    answer_task2 = possible_remove_sizes[0]
     
     
 
